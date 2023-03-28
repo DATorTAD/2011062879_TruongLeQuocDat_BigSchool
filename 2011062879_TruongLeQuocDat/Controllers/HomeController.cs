@@ -5,25 +5,31 @@ using System.Linq;
 using System.Web;
 using System.Data.Entity;
 using System.Web.Mvc;
+using _2011062879_TruongLeQuocDat.ViewModels;
 
 namespace _2011062879_TruongLeQuocDat.Controllers
 {
-    
+
     public class HomeController : Controller
     {
-        private ApplicationDbContext _dbcontext;
+        private ApplicationDbContext _dbContext;
         public HomeController()
         {
-            _dbcontext = new ApplicationDbContext();
+            _dbContext = new ApplicationDbContext();
         }
-
         public ActionResult Index()
         {
-            var upcommingCourses = _dbcontext.Courses
+            var upcomingCourses = _dbContext.Courses
                 .Include(c => c.Lecturer)
                 .Include(c => c.Category)
                 .Where(c => c.DateTime > DateTime.Now);
-            return View(upcommingCourses);
+
+            var viewModel = new CoursesViewModel
+            {
+                UpcommingCourses = upcomingCourses,
+                ShowAction = User.Identity.IsAuthenticated
+            };
+            return View(viewModel);
         }
 
         public ActionResult About()
